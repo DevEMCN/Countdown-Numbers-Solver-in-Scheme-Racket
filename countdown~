@@ -1,0 +1,18 @@
+#lang racket
+
+(define l '(6 5 +))
+
+(define answer 30)
+
+;(define ops (+ - * /))
+
+;(define (cd l)
+;  (if(null? l)
+;     '()
+;     (
+
+;(cd l ops)
+(car (cdr l))
+     
+
+

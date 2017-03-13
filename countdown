@@ -1,0 +1,25 @@
+#lang racket
+
+(define l '(10 6 7 - +))
+
+;adapted from http://stackoverflow.com/questions/29244677/implementation-of-lifo-list-in-scheme
+(define (make-stack)
+  (let ((stack '()))
+    (lambda (code . args)
+      (cond 
+        [(eq? code 0)  ((car stack)(set! stack (cdr stack)))]
+        [(eq? code 1) (set! stack (cons (reverse args) stack))]
+        [(eq? code 2) stack]
+        [else "Not valid code"]))))
+
+(define (evalrpn l stack)
+ (if (null? l)
+      '()
+      ((if (number? (car l))
+          (stack 1 (car l))
+          (if (symbol=? (car l) '- )
+              (stack 1 ((- (stack 0) (stack 0))))
+              (stack 2))) (evalrpn (cdr l) stack))))
+
+(define s (make-stack))
+(evalrpn l s )
