@@ -32,21 +32,36 @@
       (evalrpn (cdr lst) stack)))) ;  back into the loop
 
 (define s (make-stack))
-;(evalrpn l s)
+(evalrpn l s)
 
-(define combs '((3 4 +) (1 2 +)))
+(define combs '((1 2 +) (8 4 * 2 + 1 6 - * 75 +)))
+;(define combs (combinations l))
 
-
-(define answer 3)
-(define (loop l a) ; loop through the list of lists, a being a list that will contain the answers
+(define answer 245)
+(define (find-answers l a) ; loop through the list of lists, a being a list that will contain the answers
   (let ((s (make-stack))) ; give the evalrpn a stack to use
   (cond
     [(= (car(evalrpn (car l) s)) answer) (cons (car l) a)] ; if the the evalrpn returns a number = to the answer, cons the list item
-    [(if (null? (cdr l)) a (loop (cdr l) a))] ; if the list is now empty, return the answers list a othwise move onto the next item
+    [(if (null? (cdr l)) a (find-answers (cdr l) a))] ; if the list is now empty, return the answers list a othwise move onto the next item
     [else #f])))
 
 (define a '())
 
-(loop combs a)
+(find-answers combs a)
 
+; adpated from https://github.com/paopao2/Algorithm-Practice/blob/master/Evaluate%20Reverse%20Polish%20Notation.java
+; basically if this function does not return 1 then it is not valid rpn
+; for example (3 4 + 1 *) count will start at 0 then goes 1-2-1-2-1 ending in 1, so this is valid
+; (2 3 4 + 1) starts at 0 then goes 1-2-3-2-3 ending in 3, so this is not valid
+
+(define (validate-rpn lst count) ; function for validating if given list is valid rpn 
+ (cond ((null? lst) ; if the list is empty return the count
+      count) ; return the stack
+      ((if (number? (car lst)) ; if the next item in the list is a number
+          (set! count (add1 count)) ; push that number onto the stack
+          (set! count (sub1 count))) ; return the stack
+      (validate-rpn (cdr lst) count)))) ;  back into the loop
+
+(validate-rpn l 0)
+ 
     
