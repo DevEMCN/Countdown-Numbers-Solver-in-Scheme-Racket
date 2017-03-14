@@ -1,25 +1,34 @@
 #lang racket
 
-(define l '(10 6 7 - +))
+(define l '(10 6 7 - + ))
 
+;following function adapted from http://stackoverflow.com/questions/29244677/implementation-of-lifo-list-in-scheme
 ; so this is the stack function with 3 options
 (define (make-stack)
   (let ((stack '())) ; maintain the stack with this varible
-    (lambda (code . args)
-      (cond 
-        [(eq? code 0)  ((car stack)(set! stack (cdr stack)))] ; this is the pop method
-        [(eq? code 1) (set! stack (cons (reverse args) stack))] ; this is the push method
-        [(eq? code 2) stack] ; this just returns the stack as it is
+    (lambda (msg . args)
+      (cond
+        
+        [(eq? msg 'pop)  (let ((head (car stack))) (set! stack (cdr stack)) head)] ; this is the pop method
+        [(eq? msg 'push) (set! stack (append (reverse args) stack))] ; this is the push method
+        [(eq? msg 'stack) stack] ; this just returns the stack as it is
         [else "Not valid code"]))))
 
-(define (evalrpn l stack) ; this is a recursive loop through the input l
- (if (null? l)
-      '()
-      ((if (number? (car l)) ; if the next item in the list is a number
-          (stack 1 (car l)) ; push that number onto the stack
-          (if (symbol=? (car l) '- ) ; otherwise if its an operator
-              (stack 1 (- (stack 0) (stack 0))) ; push the result of pop stack - pop stack back onto the stack
-              (stack 2))) (evalrpn (cdr l) stack)))) ; return the stack and call pass in the stack as it is here
+;(define (evalrpn l stack) ; this is a recursive loop through the input l
+; (if (null? l)
+;      '()
+;      ((if (number? (car l)) ; if the next item in the list is a number
+;          (stack 'push (car l)) ; push that number onto the stack
+;          (if (symbol=? (car l) '- ) ; otherwise if its an operator
+;              (stack 'push (- (stack 'pop) (stack 'pop))) ; push the result of pop stack - pop stack back onto the stack
+;              (stack 'stack))) ; return the stack
+;        (evalrpn (cdr l) stack)))) ;  back into the loop
 
 (define s (make-stack))
-(evalrpn l s )
+(s 'push 10)
+(s 'push 20)
+(s 'stack)
+(s 'pop)
+(s 'stack)
+
+;(evalrpn l s )
