@@ -2,24 +2,24 @@
 
 (define l '(10 6 7 - +))
 
-;adapted from http://stackoverflow.com/questions/29244677/implementation-of-lifo-list-in-scheme
+; so this is the stack function with 3 options
 (define (make-stack)
-  (let ((stack '()))
+  (let ((stack '())) ; maintain the stack with this varible
     (lambda (code . args)
       (cond 
-        [(eq? code 0)  ((car stack)(set! stack (cdr stack)))]
-        [(eq? code 1) (set! stack (cons (reverse args) stack))]
-        [(eq? code 2) stack]
+        [(eq? code 0)  ((car stack)(set! stack (cdr stack)))] ; this is the pop method
+        [(eq? code 1) (set! stack (cons (reverse args) stack))] ; this is the push method
+        [(eq? code 2) stack] ; this just returns the stack as it is
         [else "Not valid code"]))))
 
-(define (evalrpn l stack)
+(define (evalrpn l stack) ; this is a recursive loop through the input l
  (if (null? l)
       '()
-      ((if (number? (car l))
-          (stack 1 (car l))
-          (if (symbol=? (car l) '- )
-              (stack 1 ((- (stack 0) (stack 0))))
-              (stack 2))) (evalrpn (cdr l) stack))))
+      ((if (number? (car l)) ; if the next item in the list is a number
+          (stack 1 (car l)) ; push that number onto the stack
+          (if (symbol=? (car l) '- ) ; otherwise if its an operator
+              (stack 1 (- (stack 0) (stack 0))) ; push the result of pop stack - pop stack back onto the stack
+              (stack 2))) (evalrpn (cdr l) stack)))) ; return the stack and call pass in the stack as it is here
 
 (define s (make-stack))
 (evalrpn l s )
