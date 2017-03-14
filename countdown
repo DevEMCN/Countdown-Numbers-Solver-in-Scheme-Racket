@@ -1,6 +1,6 @@
 #lang racket
 
-(define l '(10 6 12 + - ))
+(define l '(3 4 + 2 *))
 
 ;following function adapted from http://stackoverflow.com/questions/29244677/implementation-of-lifo-list-in-scheme
 ; so this is the stack function with 3 options
@@ -18,18 +18,35 @@
    (op (car l) (cadr l)))
 
 ; adpated from https://github.com/paopao2/Algorithm-Practice/blob/master/Evaluate%20Reverse%20Polish%20Notation.java
-(define (evalrpn l stack) ; this is a recursive loop through the input l
- (cond ((null? l)
-      (stack 'stack))
-      ((if (number? (car l)) ; if the next item in the list is a number
-          (stack 'push (car l)) ; push that number onto the stack
-          (if (symbol=? '+ (car l))
-              (stack 'push (+(stack 'pop) (stack 'pop)))
-              '())) ; push the result of pop stack - pop stack back onto the stack
-      (evalrpn (cdr l) stack)))) ;  back into the loop
+(define (evalrpn lst stack) ; this is a recursive loop through the input l
+ (cond ((null? lst)
+      (stack 'stack)) ; return the stack
+      ((if (number? (car lst)) ; if the next item in the list is a number
+          (stack 'push (car lst)) ; push that number onto the stack
+          (cond
+              ((symbol=? '+ (car lst)) (stack 'push (+ (stack 'pop) (stack 'pop))))  ;push the result of pop stack + pop stack back onto the stack
+              ((symbol=? '- (car lst)) (stack 'push (- (stack 'pop) (stack 'pop)))) ; and so on
+              ((symbol=? '* (car lst)) (stack 'push (* (stack 'pop) (stack 'pop)))) ; ..
+              ((symbol=? '/ (car lst)) (stack 'push (/ (stack 'pop) (stack 'pop)))) ; ..
+              (else stack 'stack))) ; return the stack
+      (evalrpn (cdr lst) stack)))) ;  back into the loop
 
 (define s (make-stack))
-(evalrpn l s)
+;(evalrpn l s)
 
+(define combs '((3 4 +) (1 2 +)))
+
+
+(define answer 3)
+(define (loop l a) ; loop through the list of lists, a being a list that will contain the answers
+  (let ((s (make-stack))) ; give the evalrpn a stack to use
+  (cond
+    [(= (car(evalrpn (car l) s)) answer) (cons (car l) a)] ; if the the evalrpn returns a number = to the answer, cons the list item
+    [(if (null? (cdr l)) a (loop (cdr l) a))] ; if the list is now empty, return the answers list a othwise move onto the next item
+    [else #f])))
+
+(define a '())
+
+(loop combs a)
 
     
