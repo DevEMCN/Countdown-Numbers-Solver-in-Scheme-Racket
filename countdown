@@ -1,6 +1,6 @@
 #lang racket
 
-(define l '(10 6 7 - + ))
+(define l '(10 6 12 + - ))
 
 ;following function adapted from http://stackoverflow.com/questions/29244677/implementation-of-lifo-list-in-scheme
 ; so this is the stack function with 3 options
@@ -14,21 +14,22 @@
         [(eq? msg 'stack) stack] ; this just returns the stack as it is
         [else "Not valid code"]))))
 
-;(define (evalrpn l stack) ; this is a recursive loop through the input l
-; (if (null? l)
-;      '()
-;      ((if (number? (car l)) ; if the next item in the list is a number
-;          (stack 'push (car l)) ; push that number onto the stack
-;          (if (symbol=? (car l) '- ) ; otherwise if its an operator
-;              (stack 'push (- (stack 'pop) (stack 'pop))) ; push the result of pop stack - pop stack back onto the stack
-;              (stack 'stack))) ; return the stack
-;        (evalrpn (cdr l) stack)))) ;  back into the loop
+(define (exp op l)
+   (op (car l) (cadr l)))
+
+; adpated from https://github.com/paopao2/Algorithm-Practice/blob/master/Evaluate%20Reverse%20Polish%20Notation.java
+(define (evalrpn l stack) ; this is a recursive loop through the input l
+ (cond ((null? l)
+      (stack 'stack))
+      ((if (number? (car l)) ; if the next item in the list is a number
+          (stack 'push (car l)) ; push that number onto the stack
+          (if (symbol=? '+ (car l))
+              (stack 'push (+(stack 'pop) (stack 'pop)))
+              '())) ; push the result of pop stack - pop stack back onto the stack
+      (evalrpn (cdr l) stack)))) ;  back into the loop
 
 (define s (make-stack))
-(s 'push 10)
-(s 'push 20)
-(s 'stack)
-(s 'pop)
-(s 'stack)
+(evalrpn l s)
 
-;(evalrpn l s )
+
+    
