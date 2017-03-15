@@ -14,10 +14,9 @@
         [(eq? msg 'stack) stack] ; this just returns the stack as it is
         [else "Not valid code"]))))
 
-(define (exp op l)
-   (op (car l) (cadr l)))
 
 ; adpated from https://github.com/paopao2/Algorithm-Practice/blob/master/Evaluate%20Reverse%20Polish%20Notation.java
+; see note 2 on this function
 (define (evalrpn lst stack) ; this is a recursive loop through the input l
  (cond ((null? lst)
       (stack 'stack)) ; return the stack
@@ -34,22 +33,24 @@
 ;(define s (make-stack))
 ;(evalrpn l s)
 
-(define combs '((4 2 5 * + 1 3 2 * + /)))
-;(define combs (combinations l))
+;(define combs '((1 2 +)(4 2 5 * + 1 3 2 * + /)))
+(define combs (combinations l))
 
 (define answer 2)
-(define (find-answers l a) ; loop through the list of lists, a being a list that will contain the answers
-  (let ((s (make-stack))) ; give the evalrpn a stack to use
-  (cond
-    [(= (car(evalrpn (car l) s)) answer) (cons (car l) a)] ; if the the evalrpn returns a number = to the answer, cons the list item
-    [(if (null? (cdr l)) a (find-answers (cdr l) a))] ; if the list is now empty, return the answers list a othwise move onto the next item
-    [else #f])))
+;(define (find-answers l a) ; loop through the list of lists, a being a list that will contain the answers
+;  (let ((s (make-stack))) ; give the evalrpn a stack to use
+;    (if (null? l) a
+;  (cond
+;    [(null? (car l))(find-answers (cdr l) a)]
+;    [(= (car(evalrpn (car l) s)) answer) (cons (car l) a)] ; if the the evalrpn returns a number = to the answer, cons the list item
+;     ; if the list is now empty, return the answers list a othwise move onto the next item
+;    [else #f]))))
 
 (define a '())
 
-(find-answers combs a)
+;(find-answers combs a)
 
-; adpated from https://github.com/paopao2/Algorithm-Practice/blob/master/Evaluate%20Reverse%20Polish%20Notation.java
+; adpated from http://stackoverflow.com/questions/14506831/whats-the-fastest-way-to-check-if-input-string-is-a-correct-rpn-expression
 ; basically if this function does not return 1 then it is not valid rpn
 ; for example (3 4 + 1 *) count will start at 0 then goes 1-2-1-2-1 ending in 1, so this is valid
 ; (2 3 4 + 1) starts at 0 then goes 1-2-3-2-3 ending in 3, so this is not valid
@@ -63,6 +64,16 @@
       (validate-rpn (cdr lst) count)))) ;  back into the loop
 
 ;(validate-rpn l 0)
- 
 
+ (define perms (filter (lambda (x) (= (validate-rpn x 0) 1)) combs))
+
+
+(define (find-answers) ; loop through the list of lists, a being a list that will contain the answers
+  (let ((s (make-stack))) ; give the evalrpn a stack to use
+    (filter
+     (lambda (x)
+       (= (car(evalrpn x s)) answer))
+     perms)))
+
+(find-answers)
 
