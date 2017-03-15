@@ -33,8 +33,8 @@
 ;(define s (make-stack))
 ;(evalrpn l s)
 
-(define combs '((1 1 +)(4 2 5 * + 1 3 2 * + /)))
-;(define combs (combinations l))
+;(define combs '((1 2 +)(4 2 5 * + 1 3 2 * + /)))
+(define combs (combinations l))
 
 (define answer 2)
 ;(define (find-answers l a) ; loop through the list of lists, a being a list that will contain the answers
@@ -65,26 +65,15 @@
 
 ;(validate-rpn l 0)
 
- ;(define perms (filter (lambda (x) (= (validate-rpn x 0) 1)) combs)) ;function filters valid rpn expressions
+ (define perms (filter (lambda (x) (= (validate-rpn x 0) 1)) combs))
 
 
 (define (find-answers) ; loop through the list of lists, a being a list that will contain the answers
   (let ((s (make-stack))) ; give the evalrpn a stack to use
     (filter
      (lambda (x)
-       (let ((an (evalrpn x s)))
-       (= (car an) answer))
-     )combs)))
+       (= (car(evalrpn x s)) answer))
+     perms)))
 
-;(find-answers)
-
-(define (find-ans) ; loop through the list of lists, a being a list that will contain the answers
-    (filter
-     (lambda (x)
-       (let ((s (make-stack))) ; give the evalrpn a stack to use
-       (let ((an (evalrpn x s)))
-       (and (= (car an) answer) (< (length an) 2)))) ; the reason for finding the length of stack is that my count function has a slight bug in it. see note 3
-     )combs))
-
-(find-ans)
+(find-answers)
 
