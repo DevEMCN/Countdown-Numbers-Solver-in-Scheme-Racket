@@ -24,20 +24,20 @@
       ((if (number? (car lst)) ; if the next item in the list is a number
           (stack 'push (car lst)) ; push that number onto the stack
           (cond
-              ((symbol=? '+ (car lst)) (stack 'push (+ (stack 'pop) (stack 'pop))))  ;push the result of pop stack + pop stack back onto the stack
-              ((symbol=? '- (car lst)) (stack 'push (- (stack 'pop) (stack 'pop)))) ; and so on
-              ((symbol=? '* (car lst)) (stack 'push (* (stack 'pop) (stack 'pop)))) ; ..
-              ((symbol=? '/ (car lst)) (stack 'push (/ (stack 'pop) (stack 'pop)))) ; ..
+              ((symbol=? '+ (car lst)) (let ((op2 (stack 'pop)))(stack 'push (+ (stack 'pop) op2))))  ;push the result of pop stack + pop stack back onto the stack
+              ((symbol=? '- (car lst)) (let ((op2 (stack 'pop)))(stack 'push (- (stack 'pop) op2))))  ; and so on
+              ((symbol=? '* (car lst)) (let ((op2 (stack 'pop)))(stack 'push (* (stack 'pop) op2))))  ; ..
+              ((symbol=? '/ (car lst)) (let ((op2 (stack 'pop)))(stack 'push (/ (stack 'pop) op2))))  ; ..
               (else stack 'stack))) ; return the stack
       (evalrpn (cdr lst) stack)))) ;  back into the loop
 
-(define s (make-stack))
-(evalrpn l s)
+;(define s (make-stack))
+;(evalrpn l s)
 
-(define combs '((1 2 +) (8 4 * 2 + 1 6 - * 75 +)))
+(define combs '((4 2 5 * + 1 3 2 * + /)))
 ;(define combs (combinations l))
 
-(define answer 245)
+(define answer 2)
 (define (find-answers l a) ; loop through the list of lists, a being a list that will contain the answers
   (let ((s (make-stack))) ; give the evalrpn a stack to use
   (cond
@@ -62,6 +62,7 @@
           (set! count (sub1 count))) ; return the stack
       (validate-rpn (cdr lst) count)))) ;  back into the loop
 
-(validate-rpn l 0)
+;(validate-rpn l 0)
  
-    
+
+
